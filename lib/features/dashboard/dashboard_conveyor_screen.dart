@@ -58,6 +58,15 @@ class _DashboardConveyorScreenState extends State<DashboardConveyorScreen> {
         .then((_) => _load());
   }
 
+  void _openStatusesList(List<String> statuses, String title) {
+    Navigator.of(context)
+        .pushNamed(
+          SampleTypesScreen.route,
+          arguments: {'statuses': statuses, 'title': title},
+        )
+        .then((_) => _load());
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = counters ?? const <String, int>{};
@@ -169,12 +178,36 @@ class _DashboardConveyorScreenState extends State<DashboardConveyorScreen> {
                       count: delivered,
                       icon: Icons.biotech_outlined,
                       accent: const Color(0xFF0891B2),
+                      actionable: delivered > 0,
+                      onTap: delivered == 0
+                          ? null
+                          : () => _openStatusesList(
+                                const [
+                                  SampleStatus.receivedAtDistrictLab,
+                                  SampleStatus.receivedAtHub,
+                                  SampleStatus.receivedAtReferenceLab,
+                                  SampleStatus.receivedAtTbLab,
+                                ],
+                                'Échantillons déposés au labo',
+                              ),
                     ),
                     StatusCard(
                       label: 'Reçus (à finaliser)',
                       count: received,
                       icon: Icons.verified_outlined,
                       accent: const Color(0xFF16A34A),
+                      actionable: received > 0,
+                      onTap: received == 0
+                          ? null
+                          : () => _openStatusesList(
+                                const [
+                                  SampleStatus.acceptedAtDistrictLab,
+                                  SampleStatus.acceptedAtHub,
+                                  SampleStatus.acceptedAtReferenceLab,
+                                  SampleStatus.acceptedAtTbLab,
+                                ],
+                                'Échantillons acceptés par le labo',
+                              ),
                     ),
                     StatusCard(
                       label: 'Résultats déposés',

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lstracker/features/common/account_menu_button.dart';
 import 'package:lstracker/features/dashboard/_dashboard_sections.dart';
+import 'package:lstracker/features/results_deposit/results_collected_sites_screen.dart';
+import 'package:lstracker/features/results_ready/results_ready_labs_screen.dart';
 import 'package:lstracker/features/samples/sample_types_screen.dart';
 import 'package:lstracker/utils/auth_utils.dart';
 import 'package:lstracker/widgets/global_bottom_nav.dart';
@@ -156,24 +158,54 @@ class _DashboardLabScreenState extends State<DashboardLabScreen> {
                       count: collected,
                       icon: Icons.local_shipping_outlined,
                       accent: const Color(0xFF2563EB),
+                      actionable: collected > 0,
+                      onTap: collected == 0
+                          ? null
+                          : () => _openStatusList(
+                                SampleStatus.onTransit,
+                                'Échantillons en transit',
+                              ),
                     ),
                     StatusCard(
                       label: 'Résultats prêts',
                       count: resultReady,
                       icon: Icons.fact_check_outlined,
                       accent: const Color(0xFF7C3AED),
+                      actionable: resultReady > 0,
+                      onTap: resultReady == 0
+                          ? null
+                          : () {
+                              Navigator.of(context)
+                                  .pushNamed(ResultsReadyLabsScreen.route)
+                                  .then((_) => _load());
+                            },
                     ),
                     StatusCard(
                       label: 'Résultats récupérés',
                       count: resultCollected,
                       icon: Icons.assignment_return_outlined,
                       accent: const Color(0xFFEA580C),
+                      actionable: resultCollected > 0,
+                      onTap: resultCollected == 0
+                          ? null
+                          : () {
+                              Navigator.of(context)
+                                  .pushNamed(ResultsCollectedSitesScreen.route)
+                                  .then((_) => _load());
+                            },
                     ),
                     StatusCard(
                       label: 'Résultats déposés',
                       count: resultDeposited,
                       icon: Icons.assignment_turned_in_outlined,
                       accent: const Color(0xFF059669),
+                      actionable: resultDeposited > 0,
+                      onTap: resultDeposited == 0
+                          ? null
+                          : () => _openStatusList(
+                                SampleStatus.resultOnSite,
+                                'Résultats déposés',
+                              ),
                     ),
                   ],
                 ),

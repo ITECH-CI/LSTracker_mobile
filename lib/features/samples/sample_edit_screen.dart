@@ -281,7 +281,8 @@ class _SampleEditScreenState extends State<SampleEditScreen> {
                             .toList(),
                         isExpanded: true,
                         decoration: const InputDecoration(
-                          labelText: 'Axe / Circuit',
+                          labelText: 'Axe / Circuit (collecte)',
+                          helperText: 'Détermine les sites de collecte proposés',
                           border: OutlineInputBorder(),
                         ),
                         onChanged: (v) => _onCircuitChanged(v),
@@ -497,6 +498,7 @@ class _SampleEditScreenState extends State<SampleEditScreen> {
                             .toList(),
                         decoration: const InputDecoration(
                           labelText: 'Laboratoire de destination',
+                          helperText: 'Indépendant du circuit de collecte',
                           border: OutlineInputBorder(),
                         ),
                         onChanged: (v) => setState(() => _destLabId = v),
