@@ -32,6 +32,9 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+# Artefacts de build des sous-projets (Gradle ecrit sous android/build/,
+# que la regle /build/ ci-dessus ne couvre pas).
+build/
 
 # Symbolication related
 app.*.symbols
