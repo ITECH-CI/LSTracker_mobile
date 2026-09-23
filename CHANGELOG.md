@@ -1,5 +1,26 @@
 # Changelog — LSTracker Mobile
 
+## 2.2.3 (build 9) — 2026-09-22
+
+### Accès au détail depuis les tableaux de bord
+
+- **Tableau de bord laboratoire** : les quatre cartes de la section « Suivi »
+  (En transit, Résultats prêts, Résultats récupérés, Résultats déposés) donnent
+  désormais accès au détail des échantillons. Elles n'étaient pas cliquables :
+  le biologiste voyait un compteur sans pouvoir l'explorer.
+- **Tableau de bord convoyeur** : les cartes « Déposés (à recevoir) » et
+  « Reçus (à finaliser) » deviennent également navigables.
+- Les trois tableaux de bord (administrateur, convoyeur, laboratoire) exposent
+  maintenant le même niveau de détail. Une carte dont le compteur est à zéro
+  reste non cliquable.
+
+### Saisie d'un échantillon
+
+- Libellés clarifiés : « Axe / Circuit (collecte) », avec la précision qu'il
+  détermine les sites de collecte proposés, et mention « Indépendant du circuit
+  de collecte » sous le laboratoire de destination. Les deux champs étaient
+  déjà indépendants ; seul l'affichage prêtait à confusion.
+
 ## 2.2.2 (build 8) — 2026-05-29
 
 ### Synchronisation OpenELIS
