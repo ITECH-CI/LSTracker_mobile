@@ -28,6 +28,12 @@ class _CollectSampleScreenState extends State<CollectSampleScreen> {
   final _collectionTimeCtl = TextEditingController();
   final _pickupDateCtl = TextEditingController();
 
+  // didChangeDependencies est rappelé à chaque changement d'état de la route
+  // (ex. ouverture d'une liste déroulante, qui pousse une route) : sans ce
+  // garde-fou, les labos étaient rechargés, le formulaire remplacé par le
+  // spinner, et le menu refermé au premier tap.
+  bool _bootstrapped = false;
+
   // Sélections
   int? _circuitId;
   int? _siteId;
@@ -65,6 +71,8 @@ class _CollectSampleScreenState extends State<CollectSampleScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_bootstrapped) return;
+    _bootstrapped = true;
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
     _circuitId = (args?['circuitId'] as int?);
