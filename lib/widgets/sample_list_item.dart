@@ -50,16 +50,20 @@ class SampleListItem extends StatelessWidget {
     this.onLongPress,
   });
 
-  // Palette alignée sur le dashboard web. Type inconnu → gris ardoise.
+  // Couleur propre à chaque type, identique au tableau de bord web
+  // (TYPE_COLORS dans templates/home/index.html). Palette catégorielle validée
+  // (outil dataviz validate_palette), attribuée par fréquence. Clés en
+  // MAJUSCULES : typeColor() compare en majuscules (« PrEP » → « PREP »).
+  // Type inconnu → gris ardoise.
   static const Map<String, Color> _typeColors = {
-    'BI': Color(0xFF3B82F6),
-    'BS': Color(0xFF06B6D4),
-    'CV': Color(0xFF4F46E5),
-    'EID': Color(0xFFEC4899),
-    'TB': Color(0xFF16A34A),
-    'HPV': Color(0xFF9333EA),
-    'PrEP': Color(0xFFF59E0B),
-    'IVSA': Color(0xFF0891B2),
+    'CV': Color(0xFF2A78D6),
+    'EID': Color(0xFFEB6834),
+    'TB': Color(0xFF1BAF7A),
+    'BI': Color(0xFFEDA100),
+    'BS': Color(0xFFE87BA4),
+    'HPV': Color(0xFF008300),
+    'PREP': Color(0xFF4A3AA7),
+    'IVSA': Color(0xFFE34948),
   };
 
   static Color typeColor(String? type) {
@@ -85,12 +89,15 @@ class SampleListItem extends StatelessWidget {
         ? sampleType!.trim()
         : '—';
     final color = typeColor(sampleType);
+    // Le texte ne prend pas la couleur brute (illisible pour les teintes
+    // claires comme le jaune de BI) : on l'assombrit pour le contraste.
+    final ink = Color.lerp(color, Colors.black, 0.45)!;
     return Container(
       width: 44,
       height: 44,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
@@ -99,7 +106,7 @@ class SampleListItem extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          color: color,
+          color: ink,
           fontWeight: FontWeight.w700,
           fontSize: type.length > 3 ? 10 : 12,
         ),
