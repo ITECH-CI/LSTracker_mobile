@@ -20,6 +20,34 @@
   détermine les sites de collecte proposés, et mention « Indépendant du circuit
   de collecte » sous le laboratoire de destination. Les deux champs étaient
   déjà indépendants ; seul l'affichage prêtait à confusion.
+- Les listes déroulantes de l'écran de collecte s'ouvrent dès le premier tap
+  (le premier tap rechargeait le formulaire et refermait le menu).
+- Le convoyeur ne se voit proposer que les laboratoires des districts où il
+  intervient (règle appliquée par le serveur).
+
+### Laboratoires
+
+- Les échantillons destinés à un laboratoire hors du périmètre de
+  l'utilisateur affichent le nom du laboratoire (au lieu de « Labo #2 »).
+  Le mobile connaît désormais tous les laboratoires, mais ne propose à la
+  saisie que ceux que l'utilisateur peut choisir (base locale v6).
+
+### Biologiste
+
+- **Consultation seule des tâches du convoyeur** : déposer au labo, modifier
+  une collecte ou un dépôt, collecter et déposer les résultats ne sont plus
+  proposés au biologiste, qui garde l'accès aux listes de suivi.
+- **Résultats prêts en lot** : sélection de plusieurs échantillons acceptés et
+  déclaration « résultat prêt » en une fois, avec les mêmes dates.
+- Les dates de fin d'analyse et de validation enregistrées sont celles
+  affichées à l'écran ; une fin d'analyse postérieure à la validation est
+  refusée.
+
+### Connexion
+
+- Les convoyeurs et biologistes dont le rôle est « USER » arrivent sur leur
+  tableau de bord métier (avec l'action « Nouvelle collecte » pour le
+  convoyeur). Nécessite le serveur à jour, puis une reconnexion.
 
 ## 2.2.2 (build 8) — 2026-05-29
 
