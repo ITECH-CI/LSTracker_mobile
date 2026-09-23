@@ -16,7 +16,7 @@ class AppDatabase {
   //   - idx_sample_lastupdated_at    : ORDER BY lastupdated_at ASC pour les dirty
   //   - idx_sample_external_id       : lookup au pull (upsertFromServer, très fréquent)
   //   - idx_sample_dirty_lastupdated : composite pour les push (dirty=1 + tri temporel)
-  static const _dbVersion = 5;
+  static const _dbVersion = 6;
 
   static final AppDatabase instance = AppDatabase._internal();
   AppDatabase._internal();
@@ -88,6 +88,11 @@ SELECT circuit_id, id FROM site WHERE circuit_id IS NOT NULL;
         if (oldV < 5) {
           // v5: index de perf manquants pour grosses bases.
           await _addPerformanceIndexes(db);
+        }
+        if (oldV < 6) {
+          // v6: lab.selectable — la table contient tous les labos (affichage
+          // des noms), seuls les sélectionnables sont proposés à la saisie.
+          await _addLabSelectableColumn(db);
         }
       },
     );
@@ -173,6 +178,16 @@ CREATE TABLE sample (
 
   /// v5: index de perf pour les listes paginées et le pull/push.
   /// Tous en IF NOT EXISTS pour rester sûrs lors d'un upgrade partiel.
+  Future<void> _addLabSelectableColumn(Database db) async {
+    // Une base montée depuis v1 a déjà la colonne (créée par
+    // _createMetadataTables en v2) : ne l'ajouter que si elle manque.
+    final cols = await db.rawQuery('PRAGMA table_info(lab)');
+    if (cols.any((c) => c['name'] == 'selectable')) return;
+    await db.execute(
+      'ALTER TABLE lab ADD COLUMN selectable INTEGER NOT NULL DEFAULT 1',
+    );
+  }
+
   Future<void> _addPerformanceIndexes(Database db) async {
     // ORDER BY created_at DESC sur les listes paginées (sample_list,
     // results_ready, etc.). Sans cet index, SQLite trie 10k lignes en
@@ -229,7 +244,8 @@ CREATE TABLE sample (
 CREATE TABLE IF NOT EXISTS lab (
   id INTEGER PRIMARY KEY,
   name TEXT,
-  lab_type TEXT
+  lab_type TEXT,
+  selectable INTEGER NOT NULL DEFAULT 1
 );
 ''');
 

@@ -114,7 +114,12 @@ class _CollectSampleScreenState extends State<CollectSampleScreen> {
     }
     try {
       final db = await AppDatabase.instance.database;
-      final labs = await db.query('lab', orderBy: 'name ASC');
+      // Saisie : seuls les labos que l'utilisateur peut choisir.
+      final labs = await db.query(
+        'lab',
+        where: 'selectable = 1',
+        orderBy: 'name ASC',
+      );
       if (!mounted) return;
       setState(() {
         _labs = labs;

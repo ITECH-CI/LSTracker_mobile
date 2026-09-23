@@ -12,6 +12,9 @@ class MetadataDao {
     final db = await _dbFuture;
 
     final labs = (payload['labs'] as List?) ?? const [];
+    // Absent sur un serveur antérieur : tous les labos reçus restent alors
+    // sélectionnables (comportement historique).
+    final allLabs = (payload['allLabs'] as List?) ?? const [];
     final circuits = (payload['circuits'] as List?) ?? const [];
     final sites = (payload['sites'] as List?) ?? const [];
     final rejectionTypes = (payload['rejectionTypes'] as List?) ?? const [];
@@ -37,13 +40,25 @@ class MetadataDao {
         }
       }
 
-      // Labs
+      // Labs : référentiel complet (noms/types pour l'affichage), puis ceux
+      // que l'utilisateur peut choisir, qui écrasent avec selectable = 1.
+      for (final e in allLabs) {
+        if (e is Map) {
+          batch.insert('lab', {
+            'id': (e['id'] as num?)?.toInt(),
+            'name': (e['name'] ?? '').toString(),
+            'lab_type': (e['labType'] ?? '').toString(),
+            'selectable': 0,
+          }, conflictAlgorithm: ConflictAlgorithm.replace);
+        }
+      }
       for (final e in labs) {
         if (e is Map) {
           batch.insert('lab', {
             'id': (e['id'] as num?)?.toInt(),
             'name': (e['name'] ?? '').toString(),
             'lab_type': (e['labType'] ?? '').toString(),
+            'selectable': 1,
           }, conflictAlgorithm: ConflictAlgorithm.replace);
         }
       }

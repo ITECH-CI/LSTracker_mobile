@@ -104,7 +104,14 @@ class _SampleEditScreenState extends State<SampleEditScreen> {
       }
       final db = await AppDatabase.instance.database;
       final circuits = await db.query('circuit', orderBy: 'name ASC');
-      final labs = await db.query('lab', orderBy: 'name ASC');
+      // Labos sélectionnables + le labo actuel de l'échantillon, pour que la
+      // valeur pré-remplie figure toujours dans la liste déroulante.
+      final labs = await db.query(
+        'lab',
+        where: 'selectable = 1 OR id = ?',
+        whereArgs: [s.destinationLabId ?? -1],
+        orderBy: 'name ASC',
+      );
 
       // Pré-remplir depuis la BD UNE SEULE FOIS
       _sample = s;

@@ -79,7 +79,12 @@ class _SampleDepositScreenState extends State<SampleDepositScreen> {
       final db = await AppDatabase.instance.database;
 
       // 1) Charger la liste des labos
-      final labs = await db.query('lab', orderBy: 'name ASC');
+      // Saisie : seuls les labos que l'utilisateur peut choisir.
+      final labs = await db.query(
+        'lab',
+        where: 'selectable = 1',
+        orderBy: 'name ASC',
+      );
 
       // 2) Pré-sélection possible du labo de destination d’un des échantillons
       int? preferredLabId;

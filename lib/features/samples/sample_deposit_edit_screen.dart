@@ -74,7 +74,14 @@ class _SampleDepositEditScreenState extends State<SampleDepositEditScreen> {
     final db = await AppDatabase.instance.database;
     try {
       final s = await dao.findById(id);
-      final labs = await db.query('lab', orderBy: 'name ASC');
+      // Labos sélectionnables + le labo actuel de l'échantillon, pour que la
+      // valeur pré-remplie figure toujours dans la liste déroulante.
+      final labs = await db.query(
+        'lab',
+        where: 'selectable = 1 OR id = ?',
+        whereArgs: [s?.deliveredLabId ?? s?.destinationLabId ?? -1],
+        orderBy: 'name ASC',
+      );
 
       // Pré-remplissage UNIQUEMENT une fois
       _sample = s;
