@@ -69,4 +69,13 @@ class AuthUtils {
 
   static Future<bool> isBiologiste() async =>
       (await getUserRole())?.toUpperCase() == 'BIOLOGISTE';
+
+  /// Tâches de terrain : déposer au labo, modifier/supprimer une collecte,
+  /// modifier un dépôt, collecter et déposer les résultats. Elles incombent
+  /// au convoyeur (et à l'admin) ; le biologiste ne fait que suivre ces
+  /// étapes, en consultation.
+  static bool canDoConveyorTasks(String? role) {
+    final r = role?.toUpperCase();
+    return r == 'CONVOYEUR' || r == 'ADMIN';
+  }
 }

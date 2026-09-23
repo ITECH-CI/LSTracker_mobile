@@ -364,6 +364,7 @@ class _SampleListScreenState extends State<SampleListScreen> {
 
   PreferredSizeWidget _buildAppBar(String userRole) {
     final n = selectedIds.length;
+    final conveyorTasks = AuthUtils.canDoConveyorTasks(userRole);
     return AppBar(
       leading: IconButton(
         icon: const Icon(Icons.close),
@@ -373,7 +374,7 @@ class _SampleListScreenState extends State<SampleListScreen> {
       title: Text('$n sélectionné${n > 1 ? 's' : ''}'),
       actions: [
         if (userRole != "USER") ...[
-          if (_isCollected) ...[
+          if (_isCollected && conveyorTasks) ...[
             IconButton(
               tooltip: 'Déposer au labo',
               onPressed: _canDepositMany ? _actionDepositMany : null,
@@ -413,12 +414,13 @@ class _SampleListScreenState extends State<SampleListScreen> {
               onPressed: selectedIds.isNotEmpty ? _actionRejectMany : null,
               icon: const Icon(Icons.block_outlined),
             ),
-            IconButton(
-              tooltip: 'Modifier le dépôt',
-              onPressed: _canEditOne ? _actionEditDepositOne : null,
-              icon: const Icon(Icons.edit_outlined),
-            ),
-          ] else if (status == SampleStatus.analysisDone) ...[
+            if (conveyorTasks)
+              IconButton(
+                tooltip: 'Modifier le dépôt',
+                onPressed: _canEditOne ? _actionEditDepositOne : null,
+                icon: const Icon(Icons.edit_outlined),
+              ),
+          ] else if (status == SampleStatus.analysisDone && conveyorTasks) ...[
             IconButton(
               tooltip: 'Collecter résultats',
               onPressed: selectedIds.isNotEmpty

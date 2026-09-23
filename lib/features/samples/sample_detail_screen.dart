@@ -146,7 +146,9 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
           appBar: AppBar(
             title: Text(title),
           ),
-          floatingActionButton: isCollected && _sample?.id != null && userRole != 'USER'
+          floatingActionButton: isCollected &&
+                  _sample?.id != null &&
+                  AuthUtils.canDoConveyorTasks(userRole)
               ? FloatingActionButton.extended(
                   icon: const Icon(Icons.biotech_outlined),
                   label: const Text('Déposer au labo'),

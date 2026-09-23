@@ -188,7 +188,7 @@ class _ResultsCollectedListScreenState
               ],
             ),
             actions: [
-              if (_items.isNotEmpty && userRole != "USER")
+              if (_items.isNotEmpty && AuthUtils.canDoConveyorTasks(userRole))
                 TextButton.icon(
                   onPressed: () => _openDeposit(
                     ids: _items
@@ -207,7 +207,7 @@ class _ResultsCollectedListScreenState
                 ),
             ],
           ),
-          floatingActionButton: canDeposit && userRole != "USER"
+          floatingActionButton: canDeposit && AuthUtils.canDoConveyorTasks(userRole)
               ? FloatingActionButton.extended(
                   icon: const Icon(Icons.assignment_turned_in_outlined),
                   label: const Text('Déposer sélection'),
