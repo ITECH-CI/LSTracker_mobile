@@ -46,8 +46,8 @@ class _SampleAnalysisFailScreenState extends State<SampleAnalysisFailScreen> {
     final d = await showDatePicker(
       context: context,
       firstDate: DateTime(2020),
-      lastDate: DateTime(now.year + 5),
-      initialDate: _date ?? now,
+      lastDate: now, // pas de date future
+      initialDate: (_date == null || _date!.isAfter(now)) ? now : _date!,
     );
     if (d != null) {
       setState(() {
@@ -90,6 +90,22 @@ class _SampleAnalysisFailScreenState extends State<SampleAnalysisFailScreen> {
   }
 
   Future<void> _save() async {
+    final completed = _combine(_date, _time); // optionnel
+    if (completed != null) {
+      // Chronologie : pas dans le futur, pas avant l'étape précédente.
+      final dateError = await dao.stepDateError(
+        completed,
+        _ids,
+        after: ['collection_date'],
+      );
+      if (dateError != null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(dateError)));
+        return;
+      }
+    }
     setState(() => _saving = true);
     try {
       final completedIso = _combine(

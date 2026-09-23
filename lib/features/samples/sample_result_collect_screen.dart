@@ -62,9 +62,11 @@ class _SampleResultCollectScreenState extends State<SampleResultCollectScreen> {
   Future<void> _pickDate() async {
     final d = await showDatePicker(
       context: context,
-      initialDate: _date,
+      // Pas de date future ; une valeur enregistrée hors borne est ramenée
+      // à aujourd'hui (sinon showDatePicker lève une assertion).
+      initialDate: _date.isAfter(DateTime.now()) ? DateTime.now() : _date,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(),
     );
     if (d != null) {
       setState(() {
@@ -101,6 +103,16 @@ class _SampleResultCollectScreenState extends State<SampleResultCollectScreen> {
       _time.minute,
     );
     final iso = dt.toIso8601String();
+
+    // Chronologie : pas dans le futur, pas avant l'étape précédente.
+    final dateError = await dao.stepDateError(dt, _ids, after: ['collection_date', 'analysis_released_date']);
+    if (dateError != null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(dateError)));
+      return;
+    }
 
     // km départ résultat : on le stocke dans result_start_mileage (même valeur appliquée à tous)
     final kmStart = int.tryParse(_kmStartCtl.text.trim());

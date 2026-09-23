@@ -43,6 +43,17 @@
   affichées à l'écran ; une fin d'analyse postérieure à la validation est
   refusée.
 
+### Contrôle des dates
+
+- Aucune date dans le futur : les calendriers s'arrêtent à aujourd'hui (au lieu
+  de 2100) et l'heure est contrôlée à l'enregistrement (tolérance 5 min).
+- Chaque étape est contrôlée par rapport aux étapes précédentes (collecte,
+  enlèvement, dépôt, validation, récupération), avec un message indiquant la
+  date en conflit. En lot, la comparaison se fait avec l'échantillon le plus
+  récent.
+- Modification d'une collecte : l'ouverture du calendrier ne plante plus
+  quand la date enregistrée sort des bornes.
+
 ### Connexion
 
 - Les convoyeurs et biologistes dont le rôle est « USER » arrivent sur leur

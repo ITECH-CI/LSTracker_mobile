@@ -101,9 +101,11 @@ class _SampleAcceptScreenState extends State<SampleAcceptScreen> {
   Future<void> _pickDate() async {
     final d = await showDatePicker(
       context: context,
-      initialDate: _date,
+      // Pas de date future ; une valeur enregistrée hors borne est ramenée
+      // à aujourd'hui (sinon showDatePicker lève une assertion).
+      initialDate: _date.isAfter(DateTime.now()) ? DateTime.now() : _date,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(),
     );
     if (d != null) {
       setState(() {
@@ -135,6 +137,16 @@ class _SampleAcceptScreenState extends State<SampleAcceptScreen> {
       _time.minute,
     );
     final acceptedIso = dt.toIso8601String();
+
+    // Chronologie : pas dans le futur, pas avant l'étape précédente.
+    final dateError = await dao.stepDateError(dt, [_sample!.id!], after: ['collection_date', 'delivered_date']);
+    if (dateError != null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(dateError)));
+      return;
+    }
 
     try {
       final n = await dao.acceptOne(

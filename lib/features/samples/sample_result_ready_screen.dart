@@ -75,9 +75,11 @@ class _DateTimePickerFieldState extends State<DateTimePickerField> {
     _unfocus();
     final picked = await showDatePicker(
       context: context,
-      initialDate: _dt,
+      // Pas de date future ; une valeur enregistrée hors borne est ramenée
+      // à aujourd'hui (sinon showDatePicker lève une assertion).
+      initialDate: _dt.isAfter(DateTime.now()) ? DateTime.now() : _dt,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(),
     );
     if (!mounted) return;
     if (picked != null) {
@@ -306,6 +308,28 @@ class _SampleResultReadyScreenState extends State<SampleResultReadyScreen> {
           ),
         ),
       );
+      return;
+    }
+
+    // Chronologie : pas dans le futur, pas avant l'étape précédente.
+    final dateError =
+        (_analysisEnd == null
+            ? null
+            : await dao.stepDateError(
+                _analysisEnd!,
+                ids,
+                after: ['collection_date'],
+              )) ??
+        await dao.stepDateError(
+          _releasedAt!,
+          ids,
+          after: ['collection_date'],
+        );
+    if (dateError != null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(dateError)));
       return;
     }
 

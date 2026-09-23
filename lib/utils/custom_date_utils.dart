@@ -73,4 +73,33 @@ class CustomDateUtils {
   static String? validateCollectionDateTime(String? value, {bool required = true}) {
     return validateCollectionDate(value, required: required);
   }
+
+  /// Tolérance sur l'horloge du téléphone avant de considérer une date
+  /// comme « dans le futur ».
+  static const futureTolerance = Duration(minutes: 5);
+
+  /// Contrôle d'une date d'étape (dépôt, acceptation, résultat…).
+  /// Retourne null si valide, un message d'erreur sinon.
+  /// [notBefore] : date de l'étape précédente la plus récente, décrite par
+  /// [notBeforeLabel] avec sa préposition (ex. « à la collecte »).
+  static String? checkStepDate(
+    DateTime dt, {
+    DateTime? notBefore,
+    String? notBeforeLabel,
+  }) {
+    if (dt.isAfter(DateTime.now().add(futureTolerance))) {
+      return 'Date dans le futur non autorisée.';
+    }
+    if (notBefore != null && dt.isBefore(notBefore)) {
+      final when = DateFormat('dd/MM/yyyy à HH:mm').format(notBefore);
+      return 'Date antérieure ${notBeforeLabel ?? "à l'étape précédente"} ($when).';
+    }
+    return null;
+  }
+
+  /// Parse une date stockée ("yyyy-MM-dd", "yyyy-MM-dd HH:mm" ou ISO).
+  static DateTime? parseStored(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    return DateTime.tryParse(value.trim().replaceFirst(' ', 'T'));
+  }
 }

@@ -61,7 +61,14 @@ class _SampleEditScreenState extends State<SampleEditScreen> {
 
   /// Picker borné à [année-1, aujourd'hui] pour éviter les saisies aberrantes.
   Future<void> _pickDate(TextEditingController ctl) async {
-    final init = DateTime.tryParse(ctl.text.trim()) ?? DateTime.now();
+    final minD = CustomDateUtils.minCollectionDate;
+    final maxD = CustomDateUtils.maxCollectionDate;
+    var init = CustomDateUtils.parseStored(ctl.text) ?? DateTime.now();
+    // Une valeur enregistrée hors bornes (ex. 2029, ou antérieure à l'an
+    // dernier) ferait lever une assertion à showDatePicker : on la ramène
+    // dans l'intervalle.
+    if (init.isAfter(maxD)) init = maxD;
+    if (init.isBefore(minD)) init = minD;
     final picked = await showDatePicker(
       context: context,
       initialDate: init,
@@ -206,6 +213,28 @@ class _SampleEditScreenState extends State<SampleEditScreen> {
   Future<void> _save() async {
     if (_sample == null) return;
     if (!_formKey.currentState!.validate()) return;
+
+    // Chronologie : prélèvement et enlèvement pas dans le futur, enlèvement
+    // pas avant le prélèvement (même règle qu'à la collecte).
+    final collectedAt = CustomDateUtils.parseStored(_collectionDateCtl.text);
+    final pickedUpAt = CustomDateUtils.parseStored(_pickupDateCtl.text);
+    final dateError =
+        (collectedAt == null
+            ? null
+            : CustomDateUtils.checkStepDate(collectedAt)) ??
+        (pickedUpAt == null
+            ? null
+            : CustomDateUtils.checkStepDate(
+                pickedUpAt,
+                notBefore: collectedAt,
+                notBeforeLabel: 'au prélèvement',
+              ));
+    if (dateError != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(dateError)));
+      return;
+    }
 
     final id = _sample!.id!;
     final kmValue = int.tryParse(_kmCtl.text.trim());

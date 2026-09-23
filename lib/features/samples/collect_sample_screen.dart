@@ -191,6 +191,30 @@ class _CollectSampleScreenState extends State<CollectSampleScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // Chronologie : prélèvement (date + heure) pas dans le futur ; enlèvement
+    // ni dans le futur, ni avant le prélèvement.
+    final collectedAt = CustomDateUtils.parseStored(
+      '${_collectionDateCtl.text.trim()}T${_collectionTimeCtl.text.trim()}',
+    );
+    final pickedUpAt = CustomDateUtils.parseStored(_pickupDateCtl.text);
+    final dateError =
+        (collectedAt == null
+            ? null
+            : CustomDateUtils.checkStepDate(collectedAt)) ??
+        (pickedUpAt == null
+            ? null
+            : CustomDateUtils.checkStepDate(
+                pickedUpAt,
+                notBefore: collectedAt,
+                notBeforeLabel: 'au prélèvement',
+              ));
+    if (dateError != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(dateError)));
+      return;
+    }
+
     setState(() => _saving = true);
 
     try {

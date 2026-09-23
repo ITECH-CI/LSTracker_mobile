@@ -161,9 +161,11 @@ class _SampleDepositScreenState extends State<SampleDepositScreen> {
   Future<void> _pickDate() async {
     final d = await showDatePicker(
       context: context,
-      initialDate: _date,
+      // Pas de date future ; une valeur enregistrée hors borne est ramenée
+      // à aujourd'hui (sinon showDatePicker lève une assertion).
+      initialDate: _date.isAfter(DateTime.now()) ? DateTime.now() : _date,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(),
     );
     if (d != null) {
       setState(() {
@@ -213,6 +215,16 @@ class _SampleDepositScreenState extends State<SampleDepositScreen> {
       _time.minute,
     );
     final deliveredIso = dt.toIso8601String();
+
+    // Chronologie : pas dans le futur, pas avant l'étape précédente.
+    final dateError = await dao.stepDateError(dt, _ids, after: ['collection_date', 'pickup_date']);
+    if (dateError != null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(dateError)));
+      return;
+    }
     final endKm = _kmCtl.text.trim().isEmpty
         ? null
         : int.tryParse(_kmCtl.text.trim());

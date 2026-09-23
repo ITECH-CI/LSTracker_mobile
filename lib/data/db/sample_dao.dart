@@ -1,7 +1,20 @@
 import 'package:sqflite/sqflite.dart';
 
+import '../../utils/custom_date_utils.dart';
 import '../models/sample.dart';
 import 'app_database.dart';
+
+/// Libellés des colonnes de date d'étape, précédés de leur préposition
+/// (« antérieure au dépôt… »).
+const _stepLabels = <String, String>{
+  'collection_date': 'à la collecte',
+  'pickup_date': "à l'enlèvement",
+  'delivered_date': 'au dépôt au labo',
+  'accepted_date': "à l'acceptation",
+  'analysis_completed_date': "à la fin d'analyse",
+  'analysis_released_date': 'à la validation biologique',
+  'result_collection_date': 'à la récupération des résultats',
+};
 
 class SampleDao {
   final Future<Database> _dbFuture = AppDatabase.instance.database;
@@ -817,6 +830,48 @@ extension SampleDaoResultReady on SampleDao {
         DateTime.now().toIso8601String(),
         ...ids,
       ],
+    );
+  }
+
+  /// Contrôle la date [dt] d'une étape pour un lot d'échantillons : pas dans
+  /// le futur, pas avant la plus récente des dates [after] (colonnes de
+  /// [_stepLabels]) des échantillons du lot. Retourne null si valide, un
+  /// message d'erreur sinon.
+  ///
+  /// [after] ne liste volontairement que les étapes réellement antérieures
+  /// saisies par le même acteur, plus la collecte : les dates de dépôt et
+  /// d'acceptation sont des horodatages de saisie, souvent enregistrés après
+  /// l'analyse (391 cas sur base réelle) — on ne compare donc pas l'analyse
+  /// à l'acceptation ou au dépôt.
+  Future<String?> stepDateError(
+    DateTime dt,
+    Iterable<int> ids, {
+    required List<String> after,
+  }) async {
+    final previous = after;
+    DateTime? latest;
+    String? latestLabel;
+    if (ids.isNotEmpty && previous.isNotEmpty) {
+      final db = await _dbFuture;
+      final placeholders = List.filled(ids.length, '?').join(',');
+      final rows = await db.rawQuery(
+        'SELECT ${previous.join(', ')} FROM sample WHERE id IN ($placeholders)',
+        ids.toList(),
+      );
+      for (final r in rows) {
+        for (final c in previous) {
+          final d = CustomDateUtils.parseStored(r[c] as String?);
+          if (d != null && (latest == null || d.isAfter(latest))) {
+            latest = d;
+            latestLabel = _stepLabels[c];
+          }
+        }
+      }
+    }
+    return CustomDateUtils.checkStepDate(
+      dt,
+      notBefore: latest,
+      notBeforeLabel: latestLabel,
     );
   }
 
