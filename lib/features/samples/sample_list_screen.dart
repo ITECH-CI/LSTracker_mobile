@@ -332,12 +332,12 @@ class _SampleListScreenState extends State<SampleListScreen> {
     if (changed == true) await _load();
   }
 
-  void _actionResultReadyOne() async {
-    if (selectedIds.length != 1) return;
-    final id = selectedIds.first;
-    final changed = await Navigator.of(
-      context,
-    ).pushNamed(SampleResultReadyScreen.route, arguments: {'id': id});
+  void _actionResultReadyMany() async {
+    if (selectedIds.isEmpty) return;
+    final changed = await Navigator.of(context).pushNamed(
+      SampleResultReadyScreen.route,
+      arguments: {'ids': selectedIds.toList()},
+    );
     _clearSelection();
     if (changed == true) await _load();
   }
@@ -393,7 +393,9 @@ class _SampleListScreenState extends State<SampleListScreen> {
           ] else if (_isAccepted) ...[
             IconButton(
               tooltip: 'Résultat prêt',
-              onPressed: _canEditOne ? _actionResultReadyOne : null,
+              onPressed: selectedIds.isNotEmpty
+                  ? _actionResultReadyMany
+                  : null,
               icon: const Icon(Icons.assignment_turned_in_outlined),
             ),
             IconButton(

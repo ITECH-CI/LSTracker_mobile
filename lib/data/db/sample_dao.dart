@@ -819,6 +819,37 @@ extension SampleDaoResultReady on SampleDao {
       ],
     );
   }
+
+  /// Marque un lot d'échantillons « résultat prêt » avec les mêmes dates.
+  /// La date de validation biologique est obligatoire ; la date de fin
+  /// d'analyse est optionnelle (valeur existante conservée si null).
+  Future<int> markResultReadyMany(
+    List<int> ids, {
+    required String analysisReleasedDate,
+    String? analysisCompletedDate,
+  }) async {
+    if (ids.isEmpty) return 0;
+    final db = await AppDatabase.instance.database;
+    final placeholders = List.filled(ids.length, '?').join(',');
+    return db.rawUpdate(
+      '''
+    UPDATE sample
+    SET sample_status = ?,
+        analysis_completed_date = COALESCE(?, analysis_completed_date),
+        analysis_released_date = ?,
+        dirty = 1,
+        lastupdated_at = ?
+    WHERE id IN ($placeholders)
+    ''',
+      [
+        SampleStatus.analysisDone, // 'ANALYSIS_DONE'
+        analysisCompletedDate,
+        analysisReleasedDate,
+        DateTime.now().toIso8601String(),
+        ...ids,
+      ],
+    );
+  }
 }
 
 extension SampleDaoUtils on SampleDao {

@@ -165,7 +165,11 @@ class _DateTimePickerFieldState extends State<DateTimePickerField> {
   }
 }
 
-/// --------- Écran: déclarer “Résultat prêt” pour 1 échantillon ---------
+/// --------- Écran: déclarer “Résultat prêt” pour 1 ou plusieurs échantillons ---------
+///
+/// Arguments de route : `{'id': int}` (un échantillon) ou `{'ids': List<int>}`
+/// (lot). En lot, les mêmes dates s'appliquent à tous les échantillons
+/// sélectionnés.
 class SampleResultReadyScreen extends StatefulWidget {
   static const route = '/samples/result-ready';
   const SampleResultReadyScreen({super.key});
@@ -181,18 +185,20 @@ class _SampleResultReadyScreenState extends State<SampleResultReadyScreen> {
 
   bool _bootstrapped = false;
   bool _loading = true;
+  bool _saving = false;
   String? _error;
 
-  Sample? _sample;
+  List<Sample> _samples = const [];
 
-  // Infos affichées
+  // Infos affichées (cas d'un seul échantillon)
   String? _siteName;
-  String? _patient;
-  String? _labNumber;
 
-  // Dates (via pickers)
+  // Dates (via pickers). Initialisées à la valeur affichée par le champ
+  // (existante, sinon maintenant) : ce qui est vu est ce qui est enregistré.
   DateTime? _analysisEnd;
   DateTime? _releasedAt; // obligatoire
+
+  bool get _isBatch => _samples.length > 1;
 
   @override
   void didChangeDependencies() {
@@ -202,25 +208,32 @@ class _SampleResultReadyScreenState extends State<SampleResultReadyScreen> {
 
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
-    final id = (args?['id'] as int?) ?? (args?['sampleId'] as int?);
-    if (id == null) {
+    final single = (args?['id'] as int?) ?? (args?['sampleId'] as int?);
+    final ids =
+        (args?['ids'] as List?)?.map((e) => (e as num).toInt()).toList() ??
+        (single != null ? [single] : const <int>[]);
+    if (ids.isEmpty) {
       setState(() {
         _loading = false;
         _error = 'Identifiant échantillon manquant.';
       });
       return;
     }
-    _load(id);
+    _load(ids);
   }
 
-  Future<void> _load(int id) async {
+  Future<void> _load(List<int> ids) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      final s = await dao.findById(id);
-      if (s == null) {
+      final samples = <Sample>[];
+      for (final id in ids) {
+        final s = await dao.findById(id);
+        if (s != null) samples.add(s);
+      }
+      if (samples.isEmpty) {
         if (!mounted) return;
         setState(() {
           _loading = false;
@@ -229,31 +242,34 @@ class _SampleResultReadyScreenState extends State<SampleResultReadyScreen> {
         return;
       }
 
-      // Résoudre nom du site si besoin
-      String? siteName = s.fromSiteName;
-      if ((siteName == null || siteName.isEmpty) && s.fromSiteId != null) {
-        final db = await AppDatabase.instance.database;
-        final rs = await db.query(
-          'site',
-          where: 'id = ?',
-          whereArgs: [s.fromSiteId],
-          limit: 1,
-        );
-        if (rs.isNotEmpty) {
-          siteName = (rs.first['name'] ?? '').toString();
+      // Résoudre nom du site si besoin (un seul échantillon)
+      String? siteName;
+      if (samples.length == 1) {
+        final s = samples.first;
+        siteName = s.fromSiteName;
+        if ((siteName == null || siteName.isEmpty) && s.fromSiteId != null) {
+          final db = await AppDatabase.instance.database;
+          final rs = await db.query(
+            'site',
+            where: 'id = ?',
+            whereArgs: [s.fromSiteId],
+            limit: 1,
+          );
+          if (rs.isNotEmpty) {
+            siteName = (rs.first['name'] ?? '').toString();
+          }
         }
       }
 
       if (!mounted) return;
+      final now = DateTime.now();
       setState(() {
-        _sample = s;
+        _samples = samples;
         _siteName = siteName;
-        _patient = s.patientIdentifier;
-        _labNumber = s.labNumber;
-
-        // Pré-remplir si déjà saisi
-        _analysisEnd = _parseIso(s.analysisCompletedDate);
-        _releasedAt = _parseIso(s.analysisReleasedDate);
+        // Pré-remplir si déjà saisi (un seul échantillon), sinon maintenant.
+        final first = samples.length == 1 ? samples.first : null;
+        _analysisEnd = _parseIso(first?.analysisCompletedDate) ?? now;
+        _releasedAt = _parseIso(first?.analysisReleasedDate) ?? now;
       });
     } catch (e) {
       if (!mounted) return;
@@ -270,7 +286,8 @@ class _SampleResultReadyScreenState extends State<SampleResultReadyScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_sample?.id == null) return;
+    final ids = _samples.where((s) => s.id != null).map((s) => s.id!).toList();
+    if (ids.isEmpty) return;
 
     // releasedAt est obligatoire
     if (_releasedAt == null) {
@@ -281,22 +298,33 @@ class _SampleResultReadyScreenState extends State<SampleResultReadyScreen> {
       );
       return;
     }
+    if (_analysisEnd != null && _analysisEnd!.isAfter(_releasedAt!)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "La fin d'analyse ne peut pas être postérieure à la validation.",
+          ),
+        ),
+      );
+      return;
+    }
 
-    final fields = <String, Object?>{
-      'analysis_completed_date': _analysisEnd?.toIso8601String(),
-      'analysis_released_date': _releasedAt!.toIso8601String(),
-      // on positionne le statut “résultat prêt / analyse terminée”
-      'sample_status': SampleStatus.analysisDone,
-      'dirty': 1, // marquer à pousser
-      'lastupdated_at': DateTime.now().toIso8601String(),
-    };
-
-    setState(() => _loading = true);
+    setState(() => _saving = true);
     try {
-      await dao.updateFields(_sample!.id!, fields);
+      await dao.markResultReadyMany(
+        ids,
+        analysisCompletedDate: _analysisEnd?.toIso8601String(),
+        analysisReleasedDate: _releasedAt!.toIso8601String(),
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Résultat marqué comme prêt.')),
+        SnackBar(
+          content: Text(
+            ids.length > 1
+                ? '${ids.length} résultats marqués comme prêts.'
+                : 'Résultat marqué comme prêt.',
+          ),
+        ),
       );
       // Push en arrière-plan
       AutoSyncManager.instance.pushNow();
@@ -307,7 +335,7 @@ class _SampleResultReadyScreenState extends State<SampleResultReadyScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) setState(() => _saving = false);
     }
   }
 
@@ -321,97 +349,136 @@ class _SampleResultReadyScreenState extends State<SampleResultReadyScreen> {
     );
   }
 
+  String _labelFor(Sample s) {
+    final main = s.labNumber?.isNotEmpty == true
+        ? s.labNumber!
+        : (s.patientIdentifier?.isNotEmpty == true
+              ? s.patientIdentifier!
+              : s.uuid);
+    final patient =
+        s.labNumber?.isNotEmpty == true &&
+            s.patientIdentifier?.isNotEmpty == true
+        ? ' · ${s.patientIdentifier}'
+        : '';
+    return '$main$patient';
+  }
+
+  Widget _singleHeader(Sample s) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        children: [
+          _infoTile('Site de collecte', _siteName, icon: Icons.place_outlined),
+          const Divider(height: 1),
+          _infoTile(
+            'Code patient',
+            s.patientIdentifier,
+            icon: Icons.badge_outlined,
+          ),
+          const Divider(height: 1),
+          _infoTile('Numéro laboratoire', s.labNumber, icon: Icons.numbers),
+        ],
+      ),
+    );
+  }
+
+  Widget _batchHeader() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ExpansionTile(
+        leading: const Icon(Icons.checklist),
+        title: Text(
+          '${_samples.length} échantillons sélectionnés',
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: const Text('Les mêmes dates seront appliquées à tous.'),
+        children: [
+          for (final s in _samples)
+            ListTile(
+              dense: true,
+              leading: const Icon(Icons.science_outlined, size: 20),
+              title: Text(_labelFor(s)),
+            ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Rôle préchargé via AuthUtils.prime() au boot, lookup synchrone.
     final role = AuthUtils.roleOrNull() ?? 'ADMIN';
-    final title =
-        'Résultat prêt \n ${_sample?.labNumber ?? _sample?.patientIdentifier ?? _sample?.uuid ?? ''}';
+    final title = _isBatch
+        ? 'Résultats prêts (${_samples.length})'
+        : 'Résultat prêt \n ${_samples.isEmpty ? '' : _labelFor(_samples.first)}';
 
     return Scaffold(
-          appBar: AppBar(title: Text(title)),
-          bottomNavigationBar: GlobalBottomNav(
-            current: BottomTab.accept,
-            userRole: role,
-          ),
-          body: _loading
-              ? const Center(child: CircularProgressIndicator())
-              : _error != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(_error!, textAlign: TextAlign.center),
+      appBar: AppBar(title: Text(title)),
+      bottomNavigationBar: GlobalBottomNav(
+        current: BottomTab.accept,
+        userRole: role,
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(_error!, textAlign: TextAlign.center),
+              ),
+            )
+          : Form(
+              key: _formKey,
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  // Infos en-tête
+                  _isBatch ? _batchHeader() : _singleHeader(_samples.first),
+                  const SizedBox(height: 12),
+
+                  // Fin analyse
+                  DateTimePickerField(
+                    key: const ValueKey('analysis-end'),
+                    dateLabel: 'Fin analyse (date)',
+                    timeLabel: 'Fin analyse (heure)',
+                    initial: _analysisEnd,
+                    onChanged: (dt) => _analysisEnd = dt,
                   ),
-                )
-              : (_sample == null
-                    ? const Center(child: Text('Introuvable'))
-                    : Form(
-                        key: _formKey,
-                        child: ListView(
-                          padding: const EdgeInsets.all(16),
-                          children: [
-                            // Infos en-tête
-                            Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                children: [
-                                  _infoTile(
-                                    'Site de collecte',
-                                    _siteName,
-                                    icon: Icons.place_outlined,
-                                  ),
-                                  const Divider(height: 1),
-                                  _infoTile(
-                                    'Code patient',
-                                    _patient,
-                                    icon: Icons.badge_outlined,
-                                  ),
-                                  const Divider(height: 1),
-                                  _infoTile(
-                                    'Numéro laboratoire',
-                                    _labNumber,
-                                    icon: Icons.numbers,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
-                            // Fin analyse
-                            DateTimePickerField(
-                              key: const ValueKey('analysis-end'),
-                              dateLabel: 'Fin analyse (date)',
-                              timeLabel: 'Fin analyse (heure)',
-                              initial: _analysisEnd,
-                              onChanged: (dt) => _analysisEnd = dt,
-                            ),
-                            const SizedBox(height: 12),
+                  // Validation biologique (obligatoire)
+                  DateTimePickerField(
+                    key: const ValueKey('released-at'),
+                    dateLabel: 'Validation biologique (date)',
+                    timeLabel: 'Validation biologique (heure)',
+                    initial: _releasedAt,
+                    onChanged: (dt) => _releasedAt = dt,
+                    validator: (_) =>
+                        _releasedAt == null ? 'Obligatoire' : null,
+                  ),
 
-                            // Validation biologique (obligatoire)
-                            DateTimePickerField(
-                              key: const ValueKey('released-at'),
-                              dateLabel: 'Validation biologique (date)',
-                              timeLabel: 'Validation biologique (heure)',
-                              initial: _releasedAt,
-                              onChanged: (dt) => _releasedAt = dt,
-                              validator: (_) =>
-                                  _releasedAt == null ? 'Obligatoire' : null,
-                            ),
-
-                            const SizedBox(height: 20),
-                            SizedBox(
-                              width: double.infinity,
-                              child: FilledButton.icon(
-                                onPressed: _submit,
-                                icon: const Icon(Icons.check_circle_outline),
-                                label: const Text('Enregistrer'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: _saving ? null : _submit,
+                      icon: _saving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.check_circle_outline),
+                      label: Text(
+                        _isBatch
+                            ? 'Marquer ${_samples.length} résultats prêts'
+                            : 'Enregistrer',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }
