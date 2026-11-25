@@ -424,7 +424,7 @@ class _SampleListScreenState extends State<SampleListScreen> {
               ),
           ] else if (status == SampleStatus.analysisDone && conveyorTasks) ...[
             IconButton(
-              tooltip: 'Collecter résultats',
+              tooltip: 'Récupérer les résultats',
               onPressed: selectedIds.isNotEmpty
                   ? _actionCollectResultsMany
                   : null,

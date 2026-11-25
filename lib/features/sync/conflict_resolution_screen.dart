@@ -209,7 +209,7 @@ class _ConflictResolutionScreenState extends State<ConflictResolutionScreen> {
             const SizedBox(height: 10),
 
             // Détails clés
-            _buildKv('Statut', s.sampleStatus ?? '—'),
+            _buildKv('Statut', SampleStatus.label(s.sampleStatus)),
             _buildKv('Site', s.fromSiteName ?? '—'),
             _buildKv('Date collecte', _fmtDate(s.collectionDate)),
             _buildKv('Dernière modif. locale', _fmtDate(s.lastupdatedAt)),

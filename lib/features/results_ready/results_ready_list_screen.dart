@@ -214,7 +214,7 @@ class _ResultsReadyListScreenState extends State<ResultsReadyListScreen> {
           floatingActionButton: canCollect && AuthUtils.canDoConveyorTasks(userRole)
               ? FloatingActionButton.extended(
                   icon: const Icon(Icons.assignment_return_outlined),
-                  label: const Text('Collecter résultats'),
+                  label: const Text('Récupérer les résultats'),
                   onPressed: _collect,
                 )
               : null,

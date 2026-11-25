@@ -13,6 +13,29 @@ class SampleStatus {
   static const String analysisFailed = 'ANALYSIS_FAILED';
   static const String resultCollected = 'RESULT_COLLECTED';
   static const String resultOnSite = 'RESULT_ON_SITE';
+
+  static const Map<String, String> _labels = {
+    onTransit: 'En cours d’acheminement',
+    receivedAtHub: 'Déposé au hub',
+    receivedAtReferenceLab: 'Déposé au laboratoire de référence',
+    receivedAtDistrictLab: 'Déposé au laboratoire de district',
+    receivedAtTbLab: 'Déposé au CAT',
+    acceptedAtHub: 'Accepté au hub',
+    acceptedAtReferenceLab: 'Accepté au laboratoire de référence',
+    acceptedAtDistrictLab: 'Accepté au laboratoire de district',
+    acceptedAtTbLab: 'Accepté au CAT',
+    analysisDone: 'Résultat prêt',
+    nonConform: 'Non conforme',
+    analysisFailed: 'Échec de l’analyse',
+    resultCollected: 'Résultat récupéré au laboratoire',
+    resultOnSite: 'Résultat déposé sur le site',
+  };
+
+  /// Libellé affiché d'un code de statut ; le code brut si inconnu.
+  static String label(String? code) {
+    if (code == null || code.trim().isEmpty) return 'Non renseigné';
+    return _labels[code.trim().toUpperCase()] ?? code;
+  }
 }
 
 class UserRole {

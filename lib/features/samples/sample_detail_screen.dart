@@ -235,7 +235,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                                                   size: 18,
                                                 ),
                                                 label: Text(
-                                                  'Statut: ${_sample!.sampleStatus ?? '—'}',
+                                                  'Statut : ${SampleStatus.label(_sample!.sampleStatus)}',
                                                 ),
                                               ),
                                             ],
@@ -401,7 +401,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                                   ),
                                   const Divider(height: 1),
                                   _kv(
-                                    'Résultat collecté',
+                                    'Résultat récupéré au laboratoire',
                                     CustomDateUtils.toHumanReadable(_sample!.resultCollectionDate),
                                     icon: Icons.assignment_return_outlined,
                                   ),

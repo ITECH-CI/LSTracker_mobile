@@ -102,7 +102,7 @@ class _ResultsCollectedSitesScreenState
     // Rôle préchargé via AuthUtils.prime() au boot, lookup synchrone.
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
-          appBar: AppBar(title: const Text('Résultats récupérés — par site')),
+          appBar: AppBar(title: const Text('Résultats récupérés au laboratoire, par site')),
           bottomNavigationBar: GlobalBottomNav(
             current: BottomTab.collect,
             userRole: userRole,

@@ -136,7 +136,7 @@ class _SampleResultCollectScreenState extends State<SampleResultCollectScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Résultats collectés: $n / ${_ids.length}')),
+        SnackBar(content: Text('Résultats récupérés au laboratoire : $n / ${_ids.length}')),
       );
       AutoSyncManager.instance.pushNow();
       Navigator.of(context).pop(true);
@@ -155,7 +155,7 @@ class _SampleResultCollectScreenState extends State<SampleResultCollectScreen> {
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
           appBar: AppBar(
-            title: Text('Collecter résultats — $count sélection(s)'),
+            title: Text('Récupérer les résultats ($count sélection(s))'),
           ),
           bottomNavigationBar: GlobalBottomNav(
             current: BottomTab.accept,

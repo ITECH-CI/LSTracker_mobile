@@ -109,10 +109,9 @@ class _SampleTypesScreenState extends State<SampleTypesScreen> {
     if (title != null && title!.trim().isNotEmpty) return title!;
     if (statuses != null && statuses!.isNotEmpty) {
       // Affiche un résumé multi-statuts
-      return 'Échantillons — ${statuses!.length} statuts';
+      return 'Échantillons (${statuses!.length} statuts)';
     }
-    final st = (status ?? SampleStatus.onTransit).replaceAll('_', ' ');
-    return 'Échantillons — $st';
+    return 'Échantillons : ${SampleStatus.label(status ?? SampleStatus.onTransit)}';
   }
 
   @override
