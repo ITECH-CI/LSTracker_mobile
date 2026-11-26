@@ -82,7 +82,7 @@ class DioClient {
           validateStatus: failed.validateStatus,
         );
 
-        return dio.request<dynamic>(
+        return await dio.request<dynamic>(
           failed.path,
           data: failed.data,
           queryParameters: failed.queryParameters,
