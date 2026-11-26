@@ -1,5 +1,24 @@
 # Changelog — LSTracker Mobile
 
+## 2.2.3 (build 10) — 2026-11-25
+
+### Libellés harmonisés avec le web
+
+- « En transit » devient « En cours d’acheminement » : carte et liste du
+  tableau de bord laboratoire, statut de la fiche échantillon.
+- « Résultats collectés » devient « Résultats récupérés au laboratoire » :
+  cartes des quatre tableaux de bord, liste et sites des résultats récupérés,
+  fiche échantillon, message de confirmation. L’action « Collecter résultats »
+  devient « Récupérer les résultats ».
+- La fiche échantillon et l’écran des conflits de synchronisation affichent
+  le statut en français (« En cours d’acheminement », « Accepté au
+  laboratoire de district »…) au lieu du code technique (`ON_TRANSIT`).
+- Titres d’écran et messages sans tiret long : « Tableau de bord : Admin »,
+  « Dépôt au labo (3 sélection(s)) », « Hors ligne : vos modifications… ».
+- Valeur absente : « Non renseigné » sur la fiche échantillon, l’acceptation,
+  la déclaration de résultat prêt, les conflits et le kilométrage de collecte
+  (sans unité) ; « - » dans les listes.
+
 ## 2.2.3 (build 9) — 2026-09-23
 
 ### Accès au détail depuis les tableaux de bord

@@ -169,7 +169,7 @@ class _ResultsReadyListScreenState extends State<ResultsReadyListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = '$_type — $_labName';
+    final title = '$_type ($_labName)';
     final canCollect = _selected.isNotEmpty;
     // Rôle préchargé via AuthUtils.prime() au boot, lookup synchrone.
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
@@ -214,7 +214,7 @@ class _ResultsReadyListScreenState extends State<ResultsReadyListScreen> {
           floatingActionButton: canCollect && AuthUtils.canDoConveyorTasks(userRole)
               ? FloatingActionButton.extended(
                   icon: const Icon(Icons.assignment_return_outlined),
-                  label: const Text('Collecter résultats'),
+                  label: const Text('Récupérer les résultats'),
                   onPressed: _collect,
                 )
               : null,

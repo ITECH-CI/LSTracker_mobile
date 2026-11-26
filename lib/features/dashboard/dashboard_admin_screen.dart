@@ -92,7 +92,7 @@ class _DashboardAdminScreenState extends State<DashboardAdminScreen> {
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
           appBar: AppBar(
-            title: const Text('Tableau de bord — Admin'),
+            title: const Text('Tableau de bord : Admin'),
             actions: [
               const SyncQueueAction(),
               AccountMenuButton(),
@@ -205,7 +205,7 @@ class _DashboardAdminScreenState extends State<DashboardAdminScreen> {
                       },
                     ),
                     StatusCard(
-                      label: 'Résultats récupérés',
+                      label: 'Résultats récupérés au laboratoire',
                       count: resultCollected,
                       icon: Icons.assignment_return_outlined,
                       accent: const Color(0xFFEA580C),

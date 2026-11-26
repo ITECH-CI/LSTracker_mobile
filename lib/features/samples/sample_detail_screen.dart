@@ -125,7 +125,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
   }
 
   Widget _kv(String label, String? value, {IconData? icon}) {
-    final v = (value == null || value.isEmpty) ? '—' : value;
+    final v = (value == null || value.isEmpty) ? 'Non renseigné' : value;
     return ListTile(
       dense: true,
       leading: icon != null ? Icon(icon) : null,
@@ -226,7 +226,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                                                 ),
                                                 label: Text(
                                                   _sample!.sampleType ??
-                                                      'Type: —',
+                                                      'Type : Non renseigné',
                                                 ),
                                               ),
                                               Chip(
@@ -235,7 +235,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                                                   size: 18,
                                                 ),
                                                 label: Text(
-                                                  'Statut: ${_sample!.sampleStatus ?? '—'}',
+                                                  'Statut : ${SampleStatus.label(_sample!.sampleStatus)}',
                                                 ),
                                               ),
                                             ],
@@ -401,7 +401,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                                   ),
                                   const Divider(height: 1),
                                   _kv(
-                                    'Résultat collecté',
+                                    'Résultat récupéré au laboratoire',
                                     CustomDateUtils.toHumanReadable(_sample!.resultCollectionDate),
                                     icon: Icons.assignment_return_outlined,
                                   ),

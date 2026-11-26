@@ -84,7 +84,7 @@ class _DashboardLabScreenState extends State<DashboardLabScreen> {
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
           appBar: AppBar(
-            title: const Text('Tableau de bord — Biologiste'),
+            title: const Text('Tableau de bord : Biologiste'),
             actions: [
               const SyncQueueAction(),
               AccountMenuButton(),
@@ -154,7 +154,7 @@ class _DashboardLabScreenState extends State<DashboardLabScreen> {
                 CardsGrid(
                   cards: [
                     StatusCard(
-                      label: 'En transit',
+                      label: 'En cours d’acheminement',
                       count: collected,
                       icon: Icons.local_shipping_outlined,
                       accent: const Color(0xFF2563EB),
@@ -163,7 +163,7 @@ class _DashboardLabScreenState extends State<DashboardLabScreen> {
                           ? null
                           : () => _openStatusList(
                                 SampleStatus.onTransit,
-                                'Échantillons en transit',
+                                'Échantillons en cours d’acheminement',
                               ),
                     ),
                     StatusCard(
@@ -181,7 +181,7 @@ class _DashboardLabScreenState extends State<DashboardLabScreen> {
                             },
                     ),
                     StatusCard(
-                      label: 'Résultats récupérés',
+                      label: 'Résultats récupérés au laboratoire',
                       count: resultCollected,
                       icon: Icons.assignment_return_outlined,
                       accent: const Color(0xFFEA580C),

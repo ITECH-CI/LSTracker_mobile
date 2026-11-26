@@ -184,7 +184,7 @@ class _DashboardUserScreenState extends State<DashboardUserScreen> {
                             },
                     ),
                     StatusCard(
-                      label: 'Résultats récupérés',
+                      label: 'Résultats récupérés au laboratoire',
                       count: resultCollected,
                       icon: Icons.assignment_return_outlined,
                       accent: const Color(0xFFEA580C),

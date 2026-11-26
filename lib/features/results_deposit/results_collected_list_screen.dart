@@ -183,7 +183,7 @@ class _ResultsCollectedListScreenState
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Résultats récupérés'),
+                Text('Résultats récupérés au laboratoire'),
                 Text(_siteLabel, style: const TextStyle(fontSize: 12)),
               ],
             ),

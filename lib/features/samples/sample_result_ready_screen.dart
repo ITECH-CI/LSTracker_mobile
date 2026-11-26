@@ -364,7 +364,7 @@ class _SampleResultReadyScreenState extends State<SampleResultReadyScreen> {
   }
 
   Widget _infoTile(String label, String? value, {IconData? icon}) {
-    final v = (value == null || value.trim().isEmpty) ? '—' : value;
+    final v = (value == null || value.trim().isEmpty) ? 'Non renseigné' : value;
     return ListTile(
       dense: true,
       leading: icon != null ? Icon(icon) : null,

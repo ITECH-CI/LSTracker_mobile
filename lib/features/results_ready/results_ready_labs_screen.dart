@@ -52,7 +52,7 @@ class _ResultsReadyLabsScreenState extends State<ResultsReadyLabsScreen> {
         return {
           'lab_id': id,
           'total': total,
-          'lab_name': (id != null ? (labNames[id] ?? 'Labo #$id') : '—'),
+          'lab_name': (id != null ? (labNames[id] ?? 'Labo #$id') : '-'),
         };
       }).toList();
 
@@ -78,7 +78,7 @@ class _ResultsReadyLabsScreenState extends State<ResultsReadyLabsScreen> {
     // Rôle préchargé via AuthUtils.prime() au boot, lookup synchrone.
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
-          appBar: AppBar(title: const Text('Résultats prêts — par labo')),
+          appBar: AppBar(title: const Text('Résultats prêts (par labo)')),
           bottomNavigationBar: GlobalBottomNav(
             current: BottomTab.accept,
             userRole: userRole,
@@ -119,7 +119,7 @@ class _ResultsReadyLabsScreenState extends State<ResultsReadyLabsScreen> {
                     itemBuilder: (_, i) {
                       final r = _rows[i];
                       final labId = (r['lab_id'] as int?) ?? 0;
-                      final name = (r['lab_name'] ?? '—').toString();
+                      final name = (r['lab_name'] ?? '-').toString();
                       final total = (r['total'] as int?) ?? 0;
                       return Card(
                         child: ListTile(
