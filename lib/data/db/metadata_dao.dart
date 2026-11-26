@@ -219,7 +219,7 @@ class MetadataDao {
       final code = e.response?.statusCode;
       final body = e.response?.data;
       final bodyText = body is String ? body : (body?.toString() ?? '');
-      throw 'HTTP $code — ${e.message ?? ""} ${bodyText.isNotEmpty ? " | $bodyText" : ""}';
+      throw 'HTTP $code : ${e.message ?? ""} ${bodyText.isNotEmpty ? " | $bodyText" : ""}';
     }
   }
 }

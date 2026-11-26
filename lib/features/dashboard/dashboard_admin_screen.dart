@@ -92,7 +92,7 @@ class _DashboardAdminScreenState extends State<DashboardAdminScreen> {
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
           appBar: AppBar(
-            title: const Text('Tableau de bord — Admin'),
+            title: const Text('Tableau de bord : Admin'),
             actions: [
               const SyncQueueAction(),
               AccountMenuButton(),

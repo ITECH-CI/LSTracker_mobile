@@ -66,7 +66,7 @@ class _ResultsReadyTypesScreenState extends State<ResultsReadyTypesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = 'Types — $_labName';
+    final title = 'Types : $_labName';
     // Rôle préchargé via AuthUtils.prime() au boot, lookup synchrone.
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(

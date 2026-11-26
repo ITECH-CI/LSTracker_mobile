@@ -169,7 +169,7 @@ class _ResultsReadyListScreenState extends State<ResultsReadyListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = '$_type — $_labName';
+    final title = '$_type ($_labName)';
     final canCollect = _selected.isNotEmpty;
     // Rôle préchargé via AuthUtils.prime() au boot, lookup synchrone.
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';

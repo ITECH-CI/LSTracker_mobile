@@ -93,7 +93,7 @@ class _DashboardConveyorScreenState extends State<DashboardConveyorScreen> {
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
           appBar: AppBar(
-            title: const Text('Tableau de bord — Convoyeur'),
+            title: const Text('Tableau de bord : Convoyeur'),
             actions: [
               const SyncQueueAction(),
               AccountMenuButton(),

@@ -66,7 +66,7 @@ class _Banner extends StatelessWidget {
               SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Hors ligne — vos modifications seront envoyées dès le retour du réseau.',
+                  'Hors ligne : vos modifications seront envoyées dès le retour du réseau.',
                   style: TextStyle(color: Colors.white, fontSize: 12.5),
                 ),
               ),

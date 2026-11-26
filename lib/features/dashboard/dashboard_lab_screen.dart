@@ -84,7 +84,7 @@ class _DashboardLabScreenState extends State<DashboardLabScreen> {
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
           appBar: AppBar(
-            title: const Text('Tableau de bord — Biologiste'),
+            title: const Text('Tableau de bord : Biologiste'),
             actions: [
               const SyncQueueAction(),
               AccountMenuButton(),

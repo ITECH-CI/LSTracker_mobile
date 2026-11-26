@@ -188,7 +188,7 @@ class _SampleRejectScreenState extends State<SampleRejectScreen> {
     // Rôle préchargé via AuthUtils.prime() au boot, lookup synchrone.
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
-          appBar: AppBar(title: Text('Rejeter — $count sélection(s)')),
+          appBar: AppBar(title: Text('Rejeter ($count sélection(s))')),
           bottomNavigationBar: GlobalBottomNav(
             current: BottomTab.accept,
             userRole: userRole,

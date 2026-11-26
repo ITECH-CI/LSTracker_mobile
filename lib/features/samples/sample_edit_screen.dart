@@ -280,7 +280,7 @@ class _SampleEditScreenState extends State<SampleEditScreen> {
   Widget build(BuildContext context) {
     final title = _sample == null
         ? 'Modifier'
-        : 'Modifier — ${_sample!.sampleIdentifier ?? _sample!.uuid}';
+        : 'Modifier : ${_sample!.sampleIdentifier ?? _sample!.uuid}';
 
     // Rôle préchargé via AuthUtils.prime() au boot, lookup synchrone.
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';

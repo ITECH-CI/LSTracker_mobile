@@ -189,7 +189,7 @@ class _ResultsDepositFormScreenState extends State<ResultsDepositFormScreen> {
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
           appBar: AppBar(
-            title: Text('Dépôt résultats — $_siteLabel'),
+            title: Text('Dépôt résultats : $_siteLabel'),
           ),
           bottomNavigationBar: GlobalBottomNav(
             current: BottomTab.collect,

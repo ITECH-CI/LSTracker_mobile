@@ -102,7 +102,7 @@ class _ResultsCollectedSitesScreenState
     // Rôle préchargé via AuthUtils.prime() au boot, lookup synchrone.
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
-          appBar: AppBar(title: const Text('Résultats récupérés au laboratoire, par site')),
+          appBar: AppBar(title: const Text('Résultats récupérés au laboratoire (par site)')),
           bottomNavigationBar: GlobalBottomNav(
             current: BottomTab.collect,
             userRole: userRole,
@@ -146,7 +146,7 @@ class _ResultsCollectedSitesScreenState
                       final name = (r['name'] ?? '—').toString();
                       final code = (r['dhis_code'] ?? '').toString();
                       final total = (r['total'] as int?) ?? 0;
-                      final label = code.isNotEmpty ? '$code — $name' : name;
+                      final label = code.isNotEmpty ? '$code : $name' : name;
 
                       return Card(
                         child: ListTile(

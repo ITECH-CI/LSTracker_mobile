@@ -67,7 +67,7 @@ class _SyncQueueActionState extends State<SyncQueueAction> {
   Widget build(BuildContext context) {
     final hasPending = _pending > 0;
     final tooltip = hasPending
-        ? '$_pending action(s) en attente — ouvrir la synchronisation'
+        ? '$_pending action(s) en attente : ouvrir la synchronisation'
         : 'Tout est synchronisé';
     return Semantics(
       button: true,

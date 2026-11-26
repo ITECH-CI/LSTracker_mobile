@@ -114,7 +114,7 @@ class AutoSyncManager with WidgetsBindingObserver {
         _consecutiveFailures = (_consecutiveFailures + 1).clamp(0, _backoffSteps.length - 1);
         LogService.instance.warn(
           _tag,
-          'run terminé avec erreur(s) — back-off: ${_currentMinInterval.inSeconds}s',
+          'run terminé avec erreur(s) (back-off: ${_currentMinInterval.inSeconds}s)',
         );
       } else {
         if (_consecutiveFailures > 0) {

@@ -108,7 +108,7 @@ class SyncService {
     } on DioException catch (e) {
       final code = e.response?.statusCode;
       final body = e.response?.data;
-      final msg = 'pushDirty: HTTP $code — ${body ?? e.message}';
+      final msg = 'pushDirty: HTTP $code (${body ?? e.message})';
       LogService.instance.error(_tag, msg, error: e, stackTrace: e.stackTrace);
       await dao.markPushFailed(uuids, 'HTTP ${code ?? "?"}');
       throw msg;
@@ -155,13 +155,13 @@ class SyncService {
       await _setLastPull(DateTime.now().toUtc());
       LogService.instance.info(
         _tag,
-        'pull: ${remote.length} reçu(s) — $applied appliqué(s), $skipped conflit(s)/préservé(s)',
+        'pull: ${remote.length} reçu(s) ($applied appliqué(s), $skipped conflit(s)/préservé(s))',
       );
       return remote.length;
     } on DioException catch (e) {
       final code = e.response?.statusCode;
       final body = e.response?.data;
-      final msg = 'pull: HTTP $code — ${body ?? e.message}';
+      final msg = 'pull: HTTP $code (${body ?? e.message})';
       LogService.instance.error(_tag, msg, error: e, stackTrace: e.stackTrace);
       throw msg;
     } catch (e, st) {
@@ -190,7 +190,7 @@ class SyncService {
       messages.add('PUSH: $pushed élément(s) envoyé(s).');
     } catch (e) {
       pushOk = false;
-      messages.add('PUSH: erreur — $e');
+      messages.add('PUSH: erreur ($e)');
     }
 
     if (!pushOk) {
@@ -205,7 +205,7 @@ class SyncService {
         messages.add('PULL: $pulled élément(s) reçu(s).');
       } catch (e) {
         pullOk = false;
-        messages.add('PULL: erreur — $e');
+        messages.add('PULL: erreur ($e)');
       }
     }
 
@@ -217,7 +217,7 @@ class SyncService {
     final duration = DateTime.now().difference(startedAt).inMilliseconds;
     LogService.instance.info(
       _tag,
-      'run: terminé en ${duration}ms — pushOk=$pushOk pullOk=$pullOk conflits=$conflicts',
+      'run: terminé en ${duration}ms (pushOk=$pushOk pullOk=$pullOk conflits=$conflicts)',
     );
 
     return SyncResult(

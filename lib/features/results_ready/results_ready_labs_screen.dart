@@ -78,7 +78,7 @@ class _ResultsReadyLabsScreenState extends State<ResultsReadyLabsScreen> {
     // Rôle préchargé via AuthUtils.prime() au boot, lookup synchrone.
     final userRole = AuthUtils.roleOrNull() ?? 'ADMIN';
     return Scaffold(
-          appBar: AppBar(title: const Text('Résultats prêts — par labo')),
+          appBar: AppBar(title: const Text('Résultats prêts (par labo)')),
           bottomNavigationBar: GlobalBottomNav(
             current: BottomTab.accept,
             userRole: userRole,
