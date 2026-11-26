@@ -728,7 +728,7 @@ class _ContextHeader extends StatelessWidget {
                     size: 14, color: theme.colorScheme.primary),
                 const SizedBox(width: 4),
                 Text(
-                  '${mileage.isEmpty ? '—' : mileage} km',
+                  mileage.isEmpty ? 'Non renseigné' : '$mileage km',
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

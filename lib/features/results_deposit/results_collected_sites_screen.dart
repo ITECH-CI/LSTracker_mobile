@@ -143,7 +143,7 @@ class _ResultsCollectedSitesScreenState
                     itemBuilder: (_, i) {
                       final r = _rows[i];
                       final sid = (r['site_id'] as int?) ?? 0;
-                      final name = (r['name'] ?? '—').toString();
+                      final name = (r['name'] ?? '-').toString();
                       final code = (r['dhis_code'] ?? '').toString();
                       final total = (r['total'] as int?) ?? 0;
                       final label = code.isNotEmpty ? '$code : $name' : name;

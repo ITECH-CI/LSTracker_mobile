@@ -87,7 +87,7 @@ class SampleListItem extends StatelessWidget {
   Widget _badge() {
     final type = (sampleType?.trim().isNotEmpty == true)
         ? sampleType!.trim()
-        : '—';
+        : '-';
     final color = typeColor(sampleType);
     // Le texte ne prend pas la couleur brute (illisible pour les teintes
     // claires comme le jaune de BI) : on l'assombrit pour le contraste.

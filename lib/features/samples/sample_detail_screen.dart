@@ -125,7 +125,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
   }
 
   Widget _kv(String label, String? value, {IconData? icon}) {
-    final v = (value == null || value.isEmpty) ? '—' : value;
+    final v = (value == null || value.isEmpty) ? 'Non renseigné' : value;
     return ListTile(
       dense: true,
       leading: icon != null ? Icon(icon) : null,
@@ -226,7 +226,7 @@ class _SampleDetailScreenState extends State<SampleDetailScreen> {
                                                 ),
                                                 label: Text(
                                                   _sample!.sampleType ??
-                                                      'Type: —',
+                                                      'Type : Non renseigné',
                                                 ),
                                               ),
                                               Chip(

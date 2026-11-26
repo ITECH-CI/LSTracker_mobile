@@ -52,7 +52,7 @@ class _ResultsReadyLabsScreenState extends State<ResultsReadyLabsScreen> {
         return {
           'lab_id': id,
           'total': total,
-          'lab_name': (id != null ? (labNames[id] ?? 'Labo #$id') : '—'),
+          'lab_name': (id != null ? (labNames[id] ?? 'Labo #$id') : '-'),
         };
       }).toList();
 
@@ -119,7 +119,7 @@ class _ResultsReadyLabsScreenState extends State<ResultsReadyLabsScreen> {
                     itemBuilder: (_, i) {
                       final r = _rows[i];
                       final labId = (r['lab_id'] as int?) ?? 0;
-                      final name = (r['lab_name'] ?? '—').toString();
+                      final name = (r['lab_name'] ?? '-').toString();
                       final total = (r['total'] as int?) ?? 0;
                       return Card(
                         child: ListTile(

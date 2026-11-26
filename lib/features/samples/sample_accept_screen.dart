@@ -26,7 +26,7 @@ class _SampleAcceptScreenState extends State<SampleAcceptScreen> {
   final dao = SampleDao();
 
   Sample? _sample;
-  String _destLabDisplay = '—';
+  String _destLabDisplay = 'Non renseigné';
   bool _loading = true;
 
   // Empêche le reboot sur ouverture clavier
@@ -71,7 +71,7 @@ class _SampleAcceptScreenState extends State<SampleAcceptScreen> {
     final db = await AppDatabase.instance.database;
     try {
       final s = await dao.findById(id);
-      String labText = '—';
+      String labText = 'Non renseigné';
       if (s?.destinationLabId != null) {
         final rows = await db.query(
           'lab',

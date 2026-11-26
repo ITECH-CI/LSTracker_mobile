@@ -210,7 +210,7 @@ class _ConflictResolutionScreenState extends State<ConflictResolutionScreen> {
 
             // Détails clés
             _buildKv('Statut', SampleStatus.label(s.sampleStatus)),
-            _buildKv('Site', s.fromSiteName ?? '—'),
+            _buildKv('Site', s.fromSiteName ?? 'Non renseigné'),
             _buildKv('Date collecte', _fmtDate(s.collectionDate)),
             _buildKv('Dernière modif. locale', _fmtDate(s.lastupdatedAt)),
 
@@ -285,7 +285,7 @@ class _ConflictResolutionScreenState extends State<ConflictResolutionScreen> {
   }
 
   String _fmtDate(String? iso) {
-    if (iso == null || iso.isEmpty) return '—';
+    if (iso == null || iso.isEmpty) return 'Non renseigné';
     final d = DateTime.tryParse(iso);
     if (d == null) return iso;
     String pad(int n) => n.toString().padLeft(2, '0');

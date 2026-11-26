@@ -15,6 +15,9 @@
   laboratoire de district »…) au lieu du code technique (`ON_TRANSIT`).
 - Titres d’écran et messages sans tiret long : « Tableau de bord : Admin »,
   « Dépôt au labo (3 sélection(s)) », « Hors ligne : vos modifications… ».
+- Valeur absente : « Non renseigné » sur la fiche échantillon, l’acceptation,
+  la déclaration de résultat prêt, les conflits et le kilométrage de collecte
+  (sans unité) ; « - » dans les listes.
 
 ## 2.2.3 (build 9) — 2026-09-23
 
